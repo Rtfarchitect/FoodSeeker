@@ -1,0 +1,5 @@
+setup.py
+FoodSeeker.egg-info/PKG-INFO
+FoodSeeker.egg-info/SOURCES.txt
+FoodSeeker.egg-info/dependency_links.txt
+FoodSeeker.egg-info/top_level.txt
