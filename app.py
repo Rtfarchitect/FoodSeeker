@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.vectorstores import FAISS
 
 import os
-from functions import get_current_location, find_places_nearby, extract_conditions_with_ai, search_vectorstore, filter_results_with_ai
+from functions import get_current_location, find_places_nearby, extract_conditions_with_ai, search_vectorstore, filter_results_with_ai, search_restaurant_google
 from dotenv import load_dotenv
 load_dotenv()
 
