@@ -1,6 +1,3 @@
-Here’s a well-crafted **README** for your GitHub project:  
-
----
 
 # AI-Powered Food Finder 🍔🤖  
 
