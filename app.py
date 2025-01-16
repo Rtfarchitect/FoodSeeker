@@ -17,7 +17,7 @@ from functions import get_current_location, find_places_nearby, extract_conditio
 from dotenv import load_dotenv
 load_dotenv()
 
-
+os.environ['OPENAI_API_KEY'] = "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"
 
 st.title("Food Seeker!")
 
@@ -29,7 +29,8 @@ col1, col2 = st.columns([1, 2])
 with col2:
 # Create a DataFrame with the user's location
     latitude, longitude = get_current_location()
-    places = find_places_nearby(latitude, longitude, radius_km=5, keyword="restaurant")
+    places = find_places_nearby(latitude, longitude, radius_km=1.5, keyword="restaurant")[:10]
+    names = [i["name"] for i in places]
     for i in places:
         i["lon"] = float(i["lon"])
         i["lat"] = float(i["lat"])
@@ -69,14 +70,29 @@ with col2:
         layers=[layer1, layer2]
     ))
 
-urls=[
-    'https://www.ubereats.com/ca-fr/brand-city/montreal-qc/poulet-rouge?srsltid=AfmBOor9Gz-n3ksZ5NFJ9zRRJlTrDzxtximoYKsYYQlP6EVsWzlGNnMS',
-    'https://www.ubereats.com/ca/store/pizzeria-napoletana/x4Zp9IKwSNGNgqIz2gCI-w?srsltid=AfmBOoqLYZb1IvIigYijDf1XZhmQnrX8YXj2KaPDsat7NOX4agTGm3zP',
-    'https://www.ubereats.com/ca/brand-city/montreal-qc/dominos?srsltid=AfmBOoqaRKsDFKCc-Je-POpmsWJ1t_AWwplON9psd-2msuWN31RZ-apn'
+urls = []
+counter = 0
+real_names = []
+with open("urls.txt", "r") as file:
+    for line in file:
+        counter+=1
+        url = line.strip()  # Remove leading/trailing whitespace or newline characters
+        if url.startswith("https"):  # Check if the line starts with 'https'
+            urls.append(url)
+            try:
+                real_names.append(names[counter])
+            except:
+                print(counter)
+# Print the list of valid URLs
+print("List of valid URLs:", urls)
+# urls=[
+#     'https://www.ubereats.com/ca-fr/brand-city/montreal-qc/poulet-rouge?srsltid=AfmBOor9Gz-n3ksZ5NFJ9zRRJlTrDzxtximoYKsYYQlP6EVsWzlGNnMS',
+#     'https://www.ubereats.com/ca/store/pizzeria-napoletana/x4Zp9IKwSNGNgqIz2gCI-w?srsltid=AfmBOoqLYZb1IvIigYijDf1XZhmQnrX8YXj2KaPDsat7NOX4agTGm3zP',
+#     'https://www.ubereats.com/ca/brand-city/montreal-qc/dominos?srsltid=AfmBOoqaRKsDFKCc-Je-POpmsWJ1t_AWwplON9psd-2msuWN31RZ-apn'
 
-]
+# ]
 
-names = ["poulet rouge", "pizzeria-napoletana", "domino"]
+# names = ["poulet rouge", "pizzeria-napoletana", "domino"]
 
 
 class Restaurant:
@@ -108,16 +124,18 @@ all_splits = docs
 
 index_path = "faiss_index"
 
-if not os.path.exists(index_path):
-    # If not saved, create and save the index
-    vectorstore = FAISS.from_documents(docs, OpenAIEmbeddings())
-    vectorstore.save_local(index_path)
-    print("FAISS index created and saved.")
-else:
-    vectorstore = FAISS.load_local(index_path, OpenAIEmbeddings(), allow_dangerous_deserialization=True)
-    print("FAISS index already exists.")
+# if not os.path.exists(index_path):
+#     # If not saved, create and save the index
+#     vectorstore = FAISS.from_documents(docs, OpenAIEmbeddings())
+#     vectorstore.save_local(index_path)
+#     print("FAISS index created and saved.")
+# else:
+#     vectorstore = FAISS.load_local(index_path, OpenAIEmbeddings(), allow_dangerous_deserialization=True)
+#     print("FAISS index already exists.")
 
-
+vectorstore = FAISS.from_documents(docs, OpenAIEmbeddings())
+vectorstore.save_local(index_path)
+print("FAISS index created and saved.")
 
 
 

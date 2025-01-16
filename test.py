@@ -4,6 +4,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
 from selenium.webdriver.chrome.options import Options
+
+from functions import find_places_nearby, get_current_location
 def search_restaurant_google(restaurant_name):
     # Configure ChromeDriver options to disable GPU acceleration
 
@@ -38,5 +40,27 @@ def search_restaurant_google(restaurant_name):
         driver.quit()
 
 # Example usage
-restaurant_url = search_restaurant_google("domino")
-print("heereeeee", restaurant_url)
+# restaurant_url = search_restaurant_google("poulet rouge")
+# print("heereeeee", restaurant_url)
+
+# latitude, longitude = get_current_location()
+# places = find_places_nearby(latitude, longitude, radius_km=1.5, keyword="restaurant")
+# print(len(places))
+# urls = []
+# for i in places[:10]:
+#     urls.append(search_restaurant_google(i["name"]))
+
+output_file = "urls.txt"
+
+# # Write URLs to the file
+# with open(output_file, "w") as file:
+#     for url in urls:
+#         file.write(url + "\n")
+
+# print(f"URLs saved to {output_file}")
+
+# output_file1 = "locs&names.txt"
+# with open(output_file1, "w") as file1:
+#     for place in places:
+#         file.write(url + "\n")
+

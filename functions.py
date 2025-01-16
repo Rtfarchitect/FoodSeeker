@@ -133,6 +133,7 @@ def filter_results_with_ai(results, conditions):
     - "text": The menu item ingredients.
     - "restaurant_name": The name of the restaurant.
     - "url": The URL of the restaurant.
+    if there is not any relevant item in the menu, say: sorry, this item is not available in our menu
     """
     client = OpenAI()
     response = client.chat.completions.create(
@@ -142,7 +143,10 @@ def filter_results_with_ai(results, conditions):
         temperature=0
     )
     filtered_results = response.choices[0].message.content
-    return eval(filtered_results)
+    if not "sorry" in filtered_results:
+        return eval(filtered_results)
+    else:
+        return filtered_results
 
 
 
