@@ -64,36 +64,86 @@ def find_places_nearby(latitude, longitude, radius_km=5, keyword="restaurant"):
         return []
     
 
+# def extract_conditions_with_ai(query: str) -> dict:
+    
+#     messages = {"user": query}
+#     """
+#     Extract conditions like ingredients to include/exclude and price limits from the query using OpenAI.
+#     """
+#     prompt = f"""
+#     You are a helpful assistant, you have to politely say hello, and if user provides information about the food, you have to extract information from the query. Extract the following information from this query, if there is anything mentioned about an allergy or sickness, exclude the ingredients which are bad for the user:
+#     - Main food category
+#     - Ingredients to include(if mentioned).
+#     - Ingredients to exclude(if mentioned, create based on your knowledge if any types of allergy or sickness mentioned).
+#     - Price limit (in dollars, if mentioned).
+#     if you need further information you need to ask.
+#     Query: "{query}"
+
+#     Return the information as a JSON object with keys: "food","include", "exclude", and "price_limit".
+#     If an element is missing, return it as an empty list or "none".
+#     """
+
+
+#     client = OpenAI()
+#     response = client.chat.completions.create(
+#         model="gpt-4",
+#         messages=[{"role": "system", "content": "You are a helpful assistant for parsing user queries."},
+#                   {"role": "user", "content": prompt}],
+#         temperature=0
+#     )
+#     extracted_conditions = response.choices[0].message.content
+#     messages["system"] = extracted_conditions
+#     print(extracted_conditions)
+#     return eval(extracted_conditions)
 def extract_conditions_with_ai(query: str) -> dict:
-    
-    
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant for parsing user queries."},
+        {"role": "user", "content": query}
+    ]
     """
     Extract conditions like ingredients to include/exclude and price limits from the query using OpenAI.
     """
-    prompt = f"""
-    You are a helpful assistant, you have to extract information from the query. Extract the following information from this query, if there is anything mentioned about an allergy or sickness, exclude the ingredients which are bad for the user:
+    prompt = """
+    You are a helpful assistant, you have to politely say hello, and if user provides information about the food, you have to extract information from the query. Extract the following information from this query, if there is anything mentioned about an allergy or sickness, exclude the ingredients which are bad for the user:
     - Main food category
     - Ingredients to include(if mentioned).
     - Ingredients to exclude(if mentioned, create based on your knowledge if any types of allergy or sickness mentioned).
     - Price limit (in dollars, if mentioned).
-
+    if you need further information you need to ask.
     Query: "{query}"
 
     Return the information as a JSON object with keys: "food","include", "exclude", and "price_limit".
     If an element is missing, return it as an empty list or "none".
     """
 
-
     client = OpenAI()
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "system", "content": "You are a helpful assistant for parsing user queries."},
-                  {"role": "user", "content": prompt}],
-        temperature=0
-    )
-    extracted_conditions = response.choices[0].message.content
-    print(extracted_conditions)
-    return eval(extracted_conditions)
+    while True:
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=messages,
+            temperature=0
+        )
+        extracted_conditions = response.choices[0].message.content
+        messages.append({"role": "system", "content": extracted_conditions})
+        print(extracted_conditions)
+
+        # Check if the response contains all needed information
+        extracted_dict = eval(extracted_conditions)
+        if all(key in extracted_dict and extracted_dict[key] for key in ["food", "include", "exclude", "price_limit"]):
+            break
+        else:
+            # Ask the user for more information if needed
+            user_input = input("Please provide more details: ")
+            messages.append({"role": "user", "content": user_input})
+
+    return extracted_dict
+
+
+
+
+
+
+
 
 def search_vectorstore(conditions, vectorstore, top_k=10):
     """

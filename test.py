@@ -4,13 +4,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
 from selenium.webdriver.chrome.options import Options
+import undetected_chromedriver as uc
+
+
 
 from functions import find_places_nearby, get_current_location
 def search_restaurant_google(restaurant_name):
     # Configure ChromeDriver options to disable GPU acceleration
 
     # Initialize WebDriver
-    driver = webdriver.Chrome()
+    # driver = webdriver.Chrome()
+    driver = uc.Chrome()
     
     try:
         # Open Google
@@ -40,15 +44,15 @@ def search_restaurant_google(restaurant_name):
         driver.quit()
 
 # Example usage
-# restaurant_url = search_restaurant_google("poulet rouge")
-# print("heereeeee", restaurant_url)
+restaurant_url = search_restaurant_google("poulet rouge")
+print("heereeeee", restaurant_url)
 
-# latitude, longitude = get_current_location()
-# places = find_places_nearby(latitude, longitude, radius_km=1.5, keyword="restaurant")
-# print(len(places))
-# urls = []
-# for i in places[:10]:
-#     urls.append(search_restaurant_google(i["name"]))
+latitude, longitude = get_current_location()
+places = find_places_nearby(latitude, longitude, radius_km=1.5, keyword="restaurant")
+print(len(places))
+urls = []
+for i in places[:20]:
+    urls.append(search_restaurant_google(i["name"]))
 
 output_file = "urls.txt"
 

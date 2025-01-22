@@ -124,18 +124,18 @@ all_splits = docs
 
 index_path = "faiss_index"
 
-# if not os.path.exists(index_path):
-#     # If not saved, create and save the index
-#     vectorstore = FAISS.from_documents(docs, OpenAIEmbeddings())
-#     vectorstore.save_local(index_path)
-#     print("FAISS index created and saved.")
-# else:
-#     vectorstore = FAISS.load_local(index_path, OpenAIEmbeddings(), allow_dangerous_deserialization=True)
-#     print("FAISS index already exists.")
+if not os.path.exists(index_path):
+    # If not saved, create and save the index
+    vectorstore = FAISS.from_documents(docs, OpenAIEmbeddings())
+    vectorstore.save_local(index_path)
+    print("FAISS index created and saved.")
+else:
+    vectorstore = FAISS.load_local(index_path, OpenAIEmbeddings(), allow_dangerous_deserialization=True)
+    print("FAISS index already exists.")
 
-vectorstore = FAISS.from_documents(docs, OpenAIEmbeddings())
-vectorstore.save_local(index_path)
-print("FAISS index created and saved.")
+# vectorstore = FAISS.from_documents(docs, OpenAIEmbeddings())
+# vectorstore.save_local(index_path)
+# print("FAISS index created and saved.")
 
 
 
@@ -146,20 +146,24 @@ print("hello")
 
 retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 10})
 
-
+from time import time
 
 with col1:
     query = st.chat_input("Ask me anything: ") 
     if query:
-    
+        
+        t1 = time()
         conditions = extract_conditions_with_ai(query)
+        print("condition extraction time:", time()-t1)
 
-
+        t2 = time()
         results = search_vectorstore(conditions, vectorstore, top_k=10)
+        print("search time:", time()-t2)
 
-
+        t3 = time()
         filtered_results = filter_results_with_ai(results, conditions)
-        print(filtered_results)
+        print("filter time:", time()-t3)
+        # print(filtered_results)
         for item in filtered_results:
             st.subheader(item["food_name"])
             st.markdown(f"**Price:** {item['price']}")
