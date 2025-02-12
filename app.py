@@ -17,7 +17,7 @@ from functions import get_current_location, find_places_nearby, extract_conditio
 from dotenv import load_dotenv
 load_dotenv()
 
-os.environ['OPENAI_API_KEY'] = "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"
+os.environ['OPENAI_API_KEY'] = ""
 
 st.title("Food Seeker!")
 
